@@ -1,0 +1,65 @@
+const fs = require('fs');
+
+function requestHandler(req, res) {
+    const url = req.url;
+    const method = req.method;
+    // if root path
+    if (url === '/') {
+        res.setHeader('Content-Type', 'text/html');
+        res.write('<html>');
+        res.write('<head><title>Enter Message</title></head>');
+        
+        // Giving "input" a NAME, causes message to be sent to server with form POST.
+        res.write('<body><form action="/message" method="POST"> \
+                        <input type="text" name="message"><button type="submit">Send</button></input> \
+                    </form></body>');
+        res.write('</html>');
+        return res.end(); // return from anonymous function. Cannot continue this function.
+    }
+
+    if (url === '/message' && method === 'POST') {
+        const body = [];
+        req.on('data',(chunk) => {
+            console.log(chunk);
+            body.push(chunk);
+        });
+        return req.on('end', () => {
+            const parsedBody = Buffer.concat(body).toString();
+            console.log(parsedBody);
+            const message = parsedBody.split('=')[1];
+            fs.writeFile('message.txt', message, (err) => {
+                // when finished writing file
+                // this in here if dependency on message.
+                res.statusCode = 302;
+                res.setHeader('Location', '/');
+                return res.end();
+            });
+        }); 
+    }
+    // this runs on /message because not in IF.
+    res.setHeader('Content-Type', 'text/html');
+    res.write('<html>');
+    res.write('<head><title>First page</title></head>');
+    res.write('<body><h1>Hello from Server!</h1></body>');
+    res.write('</html>');
+    res.end();
+
+}
+
+module.exports = requestHandler;
+
+    /* or for multiple exports */
+/*
+module.exports = {
+    handler: requestHandler,
+    someText: "blah blah blah"
+}
+
+// *********** OR
+
+module.exports.handler = requestHandler;
+
+// *********** OR
+
+exports.handler = requestHandler;
+*/
