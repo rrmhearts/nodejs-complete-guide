@@ -1,5 +1,3 @@
-const http = require('http');
-
 const express = require('express');
 const app = express(); // Valid request handler.
 /*
@@ -23,6 +21,6 @@ app.use((req, res, next /*func*/) => {
     res.send('<h1>Hello from Express!</h1>')
 }); // add a new middleware function
 
+app.listen(3000); /* REPLACES
 const server = http.createServer(app);
-
-server.listen(3000);
+server.listen(3000); */
