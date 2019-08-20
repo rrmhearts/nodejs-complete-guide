@@ -10,13 +10,21 @@ const app = express(); // Valid request handler.
     --->
     Response
 */
-// runs on every request
-app.use((req, res, next /*func*/) => {
-    console.log('In the middleware');
-    next(); // go to next middleware 
+app.use('/', (req, res, next) => {
+    console.log('this always runs');
+    next();
+});
+app.use('/add-product' /*default*/, (req, res, next /*func*/) => {
+    console.log('In ANOTHER middleware');
+    res.send('<h1>Add product page</h1>')
 }); // add a new middleware function
 
-app.use((req, res, next /*func*/) => {
+/* must call next to go to next middleware! 
+    next() will take you to the middleware below
+*/
+
+// routes that start with / 
+app.use('/' /*default*/, (req, res, next /*func*/) => {
     console.log('In ANOTHER middleware');
     res.send('<h1>Hello from Express!</h1>')
 }); // add a new middleware function
