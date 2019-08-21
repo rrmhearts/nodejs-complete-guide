@@ -1,6 +1,9 @@
+const path = require('path');
+
 const express = require('express');
 const app = express(); // Valid request handler.
 const bodyParser = require('body-parser');
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 /*
@@ -20,7 +23,7 @@ app.use(shopRoutes);
 
 // Catch all 404 error page.
 app.use((req, res, next) => {
-
-    res.status(404).send('<h1>Page not found</h1>');
+    res.status(404).sendFile(path.join(__dirname, 'views', 'images', '404.png'));
+    // res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 app.listen(3000);
