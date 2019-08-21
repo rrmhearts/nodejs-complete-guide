@@ -6,90 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Page Not Found</title>
+    <link rel="stylesheet" href="/css/main.css"/> <!-- will look in static path /public-->
+
     <style>
-        body {
-            padding: 0;
-            margin: 0;
-            font-family: sans-serif;
+        #error-page h1{
+            text-align: center;
         }
-
-        main {
-            padding: 1rem;
-        }
-
-        .main-header {
-            width: 100%;
-            height: 3.5rem;
-            background-color: #e7d04a;
-            padding: 0 1.5rem;
-        }
-
-        .main-header__nav {
-            height: 100%;
-            display: flex;
-            align-items: center;
-        }
-
-        .main-header__item-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-        }
-
-        .main-header__item {
-            margin: 0;
-            padding: 0;
-            margin: 0 1rem;
-        }
-
-        .main-header__item a {
-            text-decoration: none;
-            color: white;
-            font-size: 21px;
-            font-weight: bold;
-        }
-
-        .main-header__item a:hover,
-        .main-header__item a:active,
-        .main-header__item a.active {
-            color: rgb(60, 62, 180);
-        }
-
-        .product-form {
-            width: 20rem;
-            max-width: 90%;
-            margin: auto;
-        }
-
-        .form-control {
-            margin: 1rem 0;
-        }
-
-        .form-control label,
-        .form-control input {
+        #error-page img {
             display: block;
-            width: 100%;
-        }
-
-        .form-control input {
-            border: 1px solid #e7d04a;
-            font: inherit;
-            border-radius: 2px;
-        }
-
-        button {
-            font: inherit;
-            border: 1px solid rgb(60, 62, 180);
-            background: white;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        button:hover,
-        button:active {
-            background-color: rgb(60, 62, 180);
-            color: white;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 </head>
@@ -103,8 +29,10 @@
             </ul>
         </nav>
     </header>
-    <h1>Page Not found!</h1>
-    <!--<img src="../views/images/404.png" alt="unicorn"/>-->
+    <div id="error-page">
+        <h1>Page Not found!</h1>
+        <img src="/images/404.png" alt="unicorn" />
+    </div>
 </body>
 
 </html>

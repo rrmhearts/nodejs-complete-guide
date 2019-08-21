@@ -17,7 +17,14 @@ const shopRoutes = require('./routes/shop');
     Response
 */
 app.use(bodyParser.urlencoded({extended: false})); // calls next after body parsing form.
+app.use(express.static(path.join(__dirname, 'public')));
 
+/*** Moved resource to public
+app.use('/resources/404.png', (req, res, next) => {
+    //res.status(404).sendFile(path.join(__dirname, 'views', 'images', '404.png'));
+    res.status(404).sendFile(path.join(__dirname, 'views', 'images', '404.png'));
+});
+*/
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
