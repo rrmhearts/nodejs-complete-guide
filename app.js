@@ -23,7 +23,7 @@ app.use(shopRoutes);
 
 // Catch all 404 error page.
 app.use((req, res, next) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', 'images', '404.png'));
-    // res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    //res.status(404).sendFile(path.join(__dirname, 'views', 'images', '404.png'));
+    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
 app.listen(3000);
