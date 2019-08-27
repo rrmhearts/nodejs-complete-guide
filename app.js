@@ -4,6 +4,11 @@ const express = require('express');
 const app = express(); // Valid request handler.
 const bodyParser = require('body-parser');
 
+// Set global values in app. Could be anything. 
+// List of things in express api - "view engine"
+app.set('view engine', 'pug');
+app.set('views', 'views') // /views is already default. not needed. Where to find templates!
+
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 /*
