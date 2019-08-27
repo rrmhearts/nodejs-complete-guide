@@ -9,7 +9,7 @@ const adminData = require('./admin');
 // routes that start with / on GET requests.
 router.get('/', (req, res, next) => {
     const products = adminData.products;
-    res.render('shop', {prods: products, docTitle: 'Shop'}); // pug is default templating engine
+    res.render('shop', {prods: products, pageTitle: 'Shop', path: '/shop'}); // pug is default templating engine
     //res.sendFile(path.join(rootDir, 'views', 'shop.html')); // sending html
 });
 
