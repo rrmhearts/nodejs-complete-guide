@@ -4,7 +4,7 @@ const express = require('express');
 const app = express(); // Valid request handler.
 const bodyParser = require('body-parser');
 
-const adminRoutes = require('./routes/admin');
+const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 /*
  **** How To Express ****
@@ -25,7 +25,7 @@ app.use('/resources/404.png', (req, res, next) => {
     res.status(404).sendFile(path.join(__dirname, 'views', 'images', '404.png'));
 });
 */
-app.use('/admin', adminRoutes);
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
 // Catch all 404 error page.
