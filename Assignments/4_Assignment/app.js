@@ -22,7 +22,7 @@ app.get('/users', (req, res, next) => {
     });
 });
 
-app.post('/', (req, res) => {
+app.post('/add-user', (req, res) => {
     if (req.body.username.length > 0)
     {
         users_list.push({name: req.body.username});
