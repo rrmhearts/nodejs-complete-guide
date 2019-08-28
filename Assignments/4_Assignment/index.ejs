@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Index</title>
+    <link rel="stylesheet" href="/main.css"/>
+</head>
+<body>
+    <header onclick="clickHandler()">
+        <h1>Index File</h1>
+    </header>
+    <form class="users-form" action="/" method="POST">
+        <div class="form-control">
+            <label>Username</label>
+            <input type="text" name="username">
+        </div>
+
+        <button class="btn" type="submit">Add User</button>
+    </form>
+    <% if (errorState) { %>
+        <p>Invalid username.</p>
+    <% } %>
+    <script src="/handler.js"></script>
+</body>
+</html>
