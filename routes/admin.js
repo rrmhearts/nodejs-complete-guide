@@ -12,7 +12,14 @@ const products = [];
 
 // /admin/add-product => GET
 router.get('/add-product', (req, res, next /*func*/) => {
-    res.render('add-product', {pageTitle: 'Add Product'});
+    res.render('add-product', {
+        pageTitle: 'Add Product',
+        activeShop: false,
+        activeAddProduct: true,
+        productsCSS: true,
+        formsCSS: true,
+        errorCSS: false
+    });
     //res.sendFile(path.join(rootDir, 'views', 'add-product.html'));
 }); // add a new middleware function
 
