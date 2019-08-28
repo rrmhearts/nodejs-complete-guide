@@ -4,15 +4,10 @@ const express = require('express');
 const app = express(); // Valid request handler.
 const bodyParser = require('body-parser');
 
-// Handlebars not "auto installed" by express
-const expressHbs = require('express-handlebars');
-
 // Set global values in app. Could be anything. 
 // List of things in express api - "view engine"
-app.engine('hbs', expressHbs({
-    layoutsDir: 'views/layouts/', defaultLayout: 'main-layout', extname: 'hbs'
-})); // Handlebars defaults to views/layouts, not needed.
-app.set('view engine', 'hbs');  // must match engine line, MUST MATCH EXTENSION
+
+app.set('view engine', 'ejs');  // must match engine line, MUST MATCH EXTENSION
 app.set('views', 'views') // /views is already default. not needed. Where to find templates!
 //app.locals.layout = false;
 
