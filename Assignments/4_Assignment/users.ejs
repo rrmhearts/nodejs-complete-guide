@@ -1,24 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Users</title>
-    <link rel="stylesheet" href="/main.css"/>
-</head>
-<body>
-    <header onclick="clickHandler()">
-        <h1>Users File</h1>
-        <a href="/">Home</a>
-    </header>
+<%- include('head.ejs') %>
     <div>
         <h1>Usernames</h1>
-        <ul>
-            <% for (let user of users) { %>
-                <li><%= user.name %></li>
-            <% } %>
-        </ul>
+        <% if (users.length > 0) { %>
+            <ul>
+                <% for (let user of users) { %>
+                    <li><%= user.name %></li>
+                <% } %>
+            </ul>
+        <% } else { %>
+            <p>No users</p>
+        <% } %>
     </div>
     <script src="/handler.js"></script>
 </body>

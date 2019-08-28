@@ -18,7 +18,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/users', (req, res, next) => {
     res.render('users', {
-        users: users_list
+        users: users_list,
+        appTitle: "Users"
     });
 });
 
@@ -36,7 +37,8 @@ app.post('/add-user', (req, res) => {
 
 app.get('/', (req, res, next) => {
     res.render('index', {
-        errorState: errorHappened
+        errorState: errorHappened,
+        appTitle: "Home"
     });
     errorHappened = false;
 });
