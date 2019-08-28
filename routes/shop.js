@@ -14,13 +14,10 @@ router.get('/', (req, res, next) => {
         pageTitle: 'Shop',
         path: '/', 
         hasProducts: products.length > 0,
-        activeShop: true,
-        activeAddProduct: false,
         productsCSS: true,
         formsCSS: false,
         errorCSS: false
-    }); // Handlebars made default templating engine
-    //res.sendFile(path.join(rootDir, 'views', 'shop.html')); // sending html
+    }); // EJS made default templating engine
 });
 
 module.exports = router;

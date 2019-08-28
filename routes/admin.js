@@ -15,18 +15,15 @@ router.get('/add-product', (req, res, next /*func*/) => {
     res.render('add-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        activeShop: false,
-        activeAddProduct: true,
         productsCSS: true,
         formsCSS: true,
         errorCSS: false
     });
-    //res.sendFile(path.join(rootDir, 'views', 'add-product.html'));
 }); // add a new middleware function
 
 // /admin/add-product => POST
 router.post('/add-product', (req, res) => {
-    products.push({title: req.body.title}); //console.log(req.body);
+    products.push({title: req.body.title});
     res.redirect('/');
 });
 
