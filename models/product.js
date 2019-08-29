@@ -1,26 +1,30 @@
 const fs = require('fs');
 const path = require('path');
 
+const getProductsFromFile = (callback) => {
+    const p = path.join(
+        path.dirname(process.mainModule.filename),
+        'models',
+        'data',
+        'products.json'
+    );
+    fs.readFile(p, (err, fileContent) => {
+        if (err || fileContent.byteLength === 0) {
+            return callback([], p /*path*/);
+        }
+        callback(JSON.parse(fileContent), p /*path*/);
+    });
+}
+
 module.exports = class Product {
     constructor(title) {
         this.title = title;
     }
 
     save() {
-        const p = path.join(
-            path.dirname(process.mainModule.filename),
-            'models',
-            'data',
-            'products.json'
-        );
-        fs.readFile(p, (err, fileContent) => {
-            let products = [];
-            if (!err) {
-                products = JSON.parse(fileContent);
-            }
-
+        getProductsFromFile((products, path) => {
             products.push(this);
-            fs.writeFile(p, JSON.stringify(products), (err) => {
+            fs.writeFile(path, JSON.stringify(products), (err) => {
                 console.log(err);
             });
         });
@@ -28,17 +32,7 @@ module.exports = class Product {
 
     // Static puts method on the class itself.
     static fetchAll(callback) {
-        const p = path.join(
-            path.dirname(process.mainModule.filename),
-            'models',
-            'data',
-            'products.json'
-        );
-        fs.readFile(p, (err, fileContent) => {
-            if (err) {
-                callback([]);
-            }
-            callback(JSON.parse(fileContent));
-        });
+        getProductsFromFile(callback);
+
     }
 };
