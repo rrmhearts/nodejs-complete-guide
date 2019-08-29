@@ -4,14 +4,12 @@ const express = require('express');
 const app = express(); // Valid request handler.
 const bodyParser = require('body-parser');
 
-// Set global values in app. Could be anything. 
-// List of things in express api - "view engine"
+const errorController = require('./controllers/errors');
 
 app.set('view engine', 'ejs');  // must match engine line, MUST MATCH EXTENSION
 app.set('views', 'views') // /views is already default. not needed. Where to find templates!
-//app.locals.layout = false;
 
-const adminData = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 /*
  **** How To Express ****
@@ -26,18 +24,9 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({extended: false})); // calls next after body parsing form.
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', adminData.routes);
+app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 // Catch all 404 error page.
-app.use((req, res, next) => {
-    res.status(404).render('404', {
-        pageTitle: 'Page Not Found',
-        path: '/404',
-        productsCSS: false,
-        formsCSS: false,
-        errorCSS: true
-    }); // Passing data into templating engine DOESN't change
-
-});
+app.use(errorController.getError404);
 app.listen(3000);
