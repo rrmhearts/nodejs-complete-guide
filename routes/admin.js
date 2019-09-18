@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 
-const productController = require('../controllers/products');
+const adminController = require('../controllers/admin');
 /*
     Mini-express app which can be exported.
 */
 
-router.get('/add-product', productController.getAddProduct); 
-router.post('/add-product', productController.postAddProduct);
+router.get('/add-product', adminController.getAddProduct); 
+router.post('/add-product', adminController.postAddProduct);
 
-router.get('/admin/add-product', productController.getAddProduct);
-router.get('/products', productController.getAddProduct);
+router.get('/admin/add-product', adminController.getAddProduct);
+router.get('/products', adminController.getProducts);
 
 module.exports = router;
