@@ -53,6 +53,9 @@ module.exports = class Cart {
 
             const updatedCart = {...cart};
             const product = updatedCart.products.find(prod => prod.id === id);
+            if (!product) {
+                return;
+            }
             const productQty = product.qty;
 
             updatedCart.products = updatedCart.products.filter(prod => prod.id !== id);
@@ -63,9 +66,14 @@ module.exports = class Cart {
         });
     }
 
-    /* Always one cart.
-    constructor() {
-        this.products = [];
-        this.totalPrice = 0;
-    } */
+    static getCart(cb) {
+        fs.readFile(p, (err, fileContent) => {
+            if (err) {
+                cb(null);
+            } else if (fileContent.byteLength !== 0) {
+                const cart = JSON.parse(fileContent);
+                cb(cart);
+            }
+        });
+    }
 }
