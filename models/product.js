@@ -17,22 +17,37 @@ const getProductsFromFile = (callback) => {
 }
 
 module.exports = class Product {
-    constructor(title, imageURL, description, price) {
+    constructor(id, title, imageURL, description, price) {
+        this.id = id;
         this.title = title;
         this.imageURL = imageURL;
         this.description = description;
         this.price = price; // just add fields here.. everything is taken care of..
     }
 
+    /* Used for Add New and Edit */
     save() {
-        this.id = Math.random().toString(); // not guaranteed to be unique, but close enough.
         getProductsFromFile((products,  // Array of products set up by getProductsFromFile
                              path) => { // Path set up by getProductsFromFile
-            products.push(this); // Add "this product" to array.
-            fs.writeFile(path, JSON.stringify(products), // make string '[{"title":"Book"},...'
+            // If product already exists, don't create a new one, update existing.
+            if (this.id) {
+                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+                const updatedProducts = [...products];
+                console.log(this, ' ', existingProductIndex);
+                updatedProducts[existingProductIndex] = this;
+                fs.writeFile(path, JSON.stringify(updatedProducts), // make string '[{"title":"Book"},...'
                 (err) => {
                     console.log(err);
                 });
+            } else {
+                // New product logic.
+                this.id = Math.random().toString(); // not guaranteed to be unique, but close enough.
+                products.push(this); // Add "this product" to array.
+                fs.writeFile(path, JSON.stringify(products), // make string '[{"title":"Book"},...'
+                    (err) => {
+                        console.log(err);
+                    });
+            }
         });
     }
 
