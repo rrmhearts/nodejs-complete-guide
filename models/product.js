@@ -25,6 +25,7 @@ module.exports = class Product {
     }
 
     save() {
+        this.id = Math.random().toString(); // not guaranteed to be unique, but close enough.
         getProductsFromFile((products,  // Array of products set up by getProductsFromFile
                              path) => { // Path set up by getProductsFromFile
             products.push(this); // Add "this product" to array.
@@ -38,5 +39,12 @@ module.exports = class Product {
     // Static puts method on the class itself.
     static fetchAll(callback) {
         getProductsFromFile(callback);
+    }
+
+    static findById(id, cb) {
+        getProductsFromFile(products => {
+            const product = products.find(p => p.id === id);
+            cb(product);
+        });
     }
 };
