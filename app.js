@@ -1,42 +1,33 @@
 const path = require('path');
 
 const express = require('express');
-const app = express(); // Valid request handler.
 const bodyParser = require('body-parser');
 
 const errorController = require('./controllers/errors');
+const sequelize = require('./util/database');
 
-app.set('view engine', 'ejs');  // must match engine line, MUST MATCH EXTENSION
-app.set('views', 'views') // /views is already default. not needed. Where to find templates!
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-/* TESTING
-db.execute('SELECT * FROM products')
-    .then(result => {
-        console.log(result[0]);
-    })
-    .catch(err => {
-        console.log(err);
-    });
-*/
-/*
- **** How To Express ****
-    Request
-    --->
-    Middleware 1
-    --->
-    Middleware 2
-    --->
-    Response
-*/
-app.use(bodyParser.urlencoded({extended: false})); // calls next after body parsing form.
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-// Catch all 404 error page.
 app.use(errorController.getError404);
-app.listen(3000);
+
+sequelize
+  .sync()
+  .then(result => {
+    // console.log(result);
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
