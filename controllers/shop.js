@@ -3,34 +3,47 @@ const Cart = require('../models/cart');
 // Controller logic 
 
 exports.getHomePage = (req, res, next) => {
-    Product.fetchAll((products) => {
-        res.render('shop/index', { // maybe shop/index product-list
-            prods: products, 
-            pageTitle: 'Shop',
-            path: '/'
-        });
-    });
+    Product.fetchAll()
+        .then(([rows, fieldData]) => {
+            console.log(rows);
+            // Destructured array.
+            res.render('shop/index', { // maybe shop/index product-list
+                prods: rows, 
+                pageTitle: 'Shop',
+                path: '/'
+            });
+        })
+        .catch(err => console.log(err));
+
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
+    Product.fetchAll()
+    .then(([rows, fieldData]) => {
+        console.log(rows);
+        // Destructured array.
         res.render('shop/product-list', {
-            prods: products, 
+            prods: rows, 
             pageTitle: 'All Products',
             path: '/products'
         });
-    });
+    })
+    .catch(err => console.log(err));
 };
 
 exports.getProduct = (req, res, next) => {
     const prodId = req.params.productId; // name after the colon in route
-    Product.findById(prodId, product => {
-        res.render('shop/product-detail', {
-            product: product,
-            pageTitle: product.title,
-            path: '/products'
-        });
-    });
+    Product.findById(prodId)
+        .then(([prod, fieldData]) => {
+            console.log(prod);
+            // Destructured array.
+            res.render('shop/product-detail', {
+                product: prod[0],
+                pageTitle: prod.title,
+                path: '/products'
+            });
+        })
+        .catch(err => console.log(err));
 }
 
 // For loading the cart page.. for display!

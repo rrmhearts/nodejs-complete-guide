@@ -16,8 +16,11 @@ exports.postAddProduct = (req, res) => {
     const desc = req.body.description;
 
     const product = new Product(null, title, imageURL, desc, price); // no id
-    product.save();
-    res.redirect('/');
+    product.save()
+        .then(() => {
+            res.redirect('/');
+        })
+        .catch(err => console.log(err));
 };
 
 exports.getEditProduct = (req, res, next /*func*/) => {

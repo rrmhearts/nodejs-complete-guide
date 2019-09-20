@@ -11,6 +11,16 @@ app.set('views', 'views') // /views is already default. not needed. Where to fin
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+
+/* TESTING
+db.execute('SELECT * FROM products')
+    .then(result => {
+        console.log(result[0]);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+*/
 /*
  **** How To Express ****
     Request

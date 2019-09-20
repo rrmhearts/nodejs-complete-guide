@@ -1,22 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+
+const db = require('../util/database');
 
 const Cart = require('./cart');
 
-const getProductsFromFile = (callback) => {
-    const p = path.join(
-        path.dirname(process.mainModule.filename), // project file path
-        'models',
-        'data',
-        'products.json'
-    );
-    fs.readFile(p, (err, fileContent) => {
-        if (err || fileContent.byteLength === 0) {
-            return callback([], p /*path*/); // use empty array if file is empty
-        }
-        callback(JSON.parse(fileContent), p /*path*/); // pass JSON "array of" objects and path to callback function.
-    });
-}
 
 module.exports = class Product {
     constructor(id, title, imageURL, description, price) {
@@ -29,64 +15,23 @@ module.exports = class Product {
 
     /* Used for Add New and Edit */
     save() {
-        getProductsFromFile((products,  // Array of products set up by getProductsFromFile
-                             path) => { // Path set up by getProductsFromFile
-            // If product already exists, don't create a new one, update existing.
-            if (this.id) {
-                const existingProductIndex = products.findIndex(prod => prod.id === this.id);
-                const updatedProducts = [...products];
-                console.log(this, ' ', existingProductIndex);
-                updatedProducts[existingProductIndex] = this;
-                fs.writeFile(path, JSON.stringify(updatedProducts), // make string '[{"title":"Book"},...'
-                (err) => {
-                    console.log(err);
-                });
-            } else {
-                // New product logic.
-                this.id = Math.random().toString(); // not guaranteed to be unique, but close enough.
-                products.push(this); // Add "this product" to array.
-                fs.writeFile(path, JSON.stringify(products), // make string '[{"title":"Book"},...'
-                    (err) => {
-                        console.log(err);
-                    });
-            }
-        });
-    }
-
-    // Static puts method on the class itself.
-    static fetchAll(callback) {
-        getProductsFromFile(callback);
-    }
-
-    static findById(id, cb) {
-        getProductsFromFile(products => {
-            const product = products.find(p => p.id === id);
-            cb(product);
-        });
+        return db.execute('INSERT INTO products (title, price, imageURL, description) '  + 
+                   'VALUES (?, ?, ?, ?)', [this.title, this.price, this.imageURL, this.description]
+                   ); // Library will escape strings when inserting into mysql.
     }
 
     static delete(id) {
-        getProductsFromFile((products, path) => {
-            if (id) {
-                /*
-                const existingProductIndex = products.findIndex(prod => prod.id === id);
-                const updatedProducts = [...products];
-                console.log(this, ' ', existingProductIndex);
-                
-                // Remove element from product array
-                updatedProducts.splice(existingProductIndex, 1);
-                */
-                const product = products.find(prod => prod.id === id);
-                const updatedProducts = products.filter(prod => prod.id !== id);
 
-                fs.writeFile(path, JSON.stringify(updatedProducts),
-                    (err) => {
-                        if (!err) {
-                            Cart.deleteProduct(id, product.price);
-                        }
-                        console.log(err);
-                    });
-            }
-        });
     }
+
+    // Static puts method on the class itself.
+    static fetchAll() {
+        return db.execute('SELECT * FROM products')
+    }
+
+    static findById(id) {
+        return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
+    }
+
+
 };
