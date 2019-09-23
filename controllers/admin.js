@@ -14,7 +14,7 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   req.user
-    .createProduct({
+    .createProduct({ // magic method sequelize
       title: title,
       price: price,
       imageUrl: imageUrl,
@@ -37,7 +37,7 @@ exports.getEditProduct = (req, res, next) => {
   }
   const prodId = req.params.productId;
   req.user
-    .getProducts({ where: { id: prodId } })
+    .getProducts({ where: { id: prodId } }) // magic method sequelize
     // Product.findByPk(prodId)
     .then(products => {
       const product = products[0];
@@ -77,7 +77,7 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   req.user
-    .getProducts()
+    .getProducts() // magic method sequelize
     .then(products => {
       res.render('admin/products', {
         prods: products,

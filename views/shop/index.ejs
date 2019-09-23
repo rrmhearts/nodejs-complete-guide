@@ -1,6 +1,6 @@
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
-<%- include('../includes/neck.ejs') %>
+    <%- include('../includes/neck.ejs') %>
 
     <%- include('../includes/navigation.ejs') %>
     <main>
@@ -20,7 +20,7 @@
                             <p class="product__description"><%= product.description %></p>
                         </div>
                         <div class="card__actions">
-                            <!-- Must pass product here because of for loop -->
+                                <a href="/products/<%= product.id %>" class="btn">Details</a>
                             <%- include('../includes/add-to-cart.ejs', {product: product}) %>
                         </div>
                     </article>
