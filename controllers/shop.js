@@ -122,20 +122,29 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
+    let fetchedCart;
     req.user.getCart()
         .then(cart => {
+            fetchedCart = cart;
             return cart.getProducts();
         })
         .then(products => {
             req.user.createOrder() // magic sequelize
                 .then(order => {
-                    return order.addProducts(products.map(product => {
-                        product.orderItem /* name of sequelize table.*/ = { quantity: product.cartItem.quantity };
+                    return order.addProducts(products.map(product => { // magic sequelize
+                        // Product list with orderItem filled out...
+                        product.orderItem /* name of sequelize table.*/ = {
+                             quantity: product.cartItem.quantity 
+                            };
                         return product;
                     }));
                 })
                 .catch(err => console.log(err)); 
             //console.log(products);
+        })
+        .then(result => {
+            // Magic sequelize function.
+            return fetchedCart.setProducts(null);
         })
         .then(result => {
             res.redirect('/orders');
@@ -144,10 +153,22 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
+
+    /*
+        Include tells sequelize to return the products per order along with orders... 
+        'products' is plural because sequelize plurals the names you give it..
+        Only works because of the relationship defined in app.js
+    */
+    req.user.getOrders({include: ['products']}) // magic sequelize method...
+        .then(orders => {
+            res.render('shop/orders', {
+                path: '/orders',
+                pageTitle: 'Your Orders',
+                orders: orders
+            });
+        })
+        .catch(err => console.log(err));
+
 };
 
 exports.getCheckout = (req, res, next) => {

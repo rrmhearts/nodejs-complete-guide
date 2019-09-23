@@ -59,11 +59,12 @@ sequelize
     if (!user) {
       return User.create({ name: 'Ryan', email: 'test@test.com' });
     }
-    return user;
+    return null; // ws user
   })
   .then(user => {
     // Creates a cart for the user.
-    return user.createCart(); // magic method sequelize
+    if (user)
+        return user.createCart(); // magic method sequelize
   })
   .then(cart => {
     app.listen(3000);
