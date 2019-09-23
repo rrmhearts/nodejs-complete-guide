@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const Cart = require('../models/cart');
 
 exports.getProducts = (req, res, next) => {
   Product.findAll()
@@ -77,6 +76,7 @@ exports.postCart = (req, res, next) => {
     .getCart() // magic method sequelize
     .then(cart => {
       fetchedCart = cart;
+      // This must be using "cart item to connect prodId with cart."
       return cart.getProducts({ where: { id: prodId } }); // magic method sequelize
     })
     .then(products => {
@@ -85,14 +85,15 @@ exports.postCart = (req, res, next) => {
         product = products[0];
       }
 
-      if (product) {
+      if (product) { // product already in cart, increase quantity
         const oldQuantity = product.cartItem.quantity;
         newQuantity = oldQuantity + 1;
         return product;
       }
-      return Product.findByPk(prodId);
+      return Product.findByPk(prodId); // find product if not in cart.
     })
     .then(product => {
+        // Connect product to a cart by adding a line to cartItems.
       return fetchedCart.addProduct(product, { // magic method sequelize
         through: { quantity: newQuantity }
       });
@@ -105,10 +106,41 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByPk(prodId, product => {
-    Cart.deleteProduct(prodId, product.price); // magic method sequelize
-    res.redirect('/cart');
-  });
+  req.user.getCart()
+    .then(cart => {
+        return cart.getProducts({ where: {id: prodId }});
+    })
+    .then(products => {
+        const product = products[0];
+        // Remove product from cartItem table.
+        return product.cartItem.destroy(); // magic sequelize method
+    })
+    .then(result => {
+        res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
+};
+
+exports.postOrder = (req, res, next) => {
+    req.user.getCart()
+        .then(cart => {
+            return cart.getProducts();
+        })
+        .then(products => {
+            req.user.createOrder() // magic sequelize
+                .then(order => {
+                    return order.addProducts(products.map(product => {
+                        product.orderItem /* name of sequelize table.*/ = { quantity: product.cartItem.quantity };
+                        return product;
+                    }));
+                })
+                .catch(err => console.log(err)); 
+            //console.log(products);
+        })
+        .then(result => {
+            res.redirect('/orders');
+        })
+        .catch(err => console.log(err));
 };
 
 exports.getOrders = (req, res, next) => {

@@ -9,6 +9,8 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 const app = express();
 
@@ -24,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use((req, res, next) => {
   User.findByPk(1)
     .then(user => {
+      // Attach user to each request.
       req.user = user;
       next();
     })
@@ -40,12 +43,14 @@ Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 User.hasOne(Cart);
 Cart.belongsTo(User);
-Cart.belongsToMany(Product, { through: CartItem });
+Cart.belongsToMany(Product, { through: CartItem }); // Cart item is a JOIN table between Cart and Product
 Product.belongsToMany(Cart, { through: CartItem });
-
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
 sequelize
-  .sync({ force: true })
-  //.sync()
+  //.sync({ force: true })
+  .sync()
   .then(result => {
     return User.findByPk(1);
     // console.log(result);
@@ -57,7 +62,7 @@ sequelize
     return user;
   })
   .then(user => {
-    // console.log(user);
+    // Creates a cart for the user.
     return user.createCart(); // magic method sequelize
   })
   .then(cart => {
