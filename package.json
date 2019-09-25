@@ -11,6 +11,7 @@
   "author": "Ryan McCoppin",
   "license": "ISC",
   "devDependencies": {
+    "dotenv": "^8.1.0",
     "nodemon": "^1.19.1"
   },
   "dependencies": {

@@ -8,6 +8,8 @@ const mongoConnect = require('./util/database').mongoConnect;
 
 const app = express();
 
+require('dotenv').config();
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
