@@ -2,12 +2,13 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Product {
-  constructor(title, price, description, imageUrl, /*optional*/id) {
+  constructor(title, price, description, imageUrl, /*optional*/id, userId) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
     this._id = id ? mongodb.ObjectId(id) : null;
+    this.userId = userId;
   }
 
   /*
@@ -69,7 +70,7 @@ class Product {
      * not the string prodId. Creates comparable ObjectId when finding.
      */
       .find({_id: new mongodb.ObjectId(prodId)})
-      .next()
+      .next() /* return next document in the cursor returned by find() */
       .then(product => {
         console.log(product);
         return product;
