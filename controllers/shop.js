@@ -25,7 +25,11 @@ exports.getProduct = (req, res, next) => {
   //     });
   //   })
   //   .catch(err => console.log(err));
-  Product.findByPk(prodId)
+
+  /*
+    Changed to findById because we switched dbs.
+  */
+  Product.findById(prodId)
     .then(product => {
       res.render('shop/product-detail', {
         product: product,

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const path = require('path');
 
 const express = require('express');
@@ -8,7 +10,6 @@ const mongoConnect = require('./util/database').mongoConnect;
 
 const app = express();
 
-require('dotenv').config();
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -35,5 +36,9 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 
 mongoConnect(() => {
+
+  /* Does not return
+     Will keep the db context by closure
+  */
   app.listen(3000);
 });
