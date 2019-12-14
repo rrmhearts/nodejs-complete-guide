@@ -33,6 +33,30 @@ class User {
       });
   }
 
+  // By user, not static.
+  getCart() {
+    const db = getDb();
+    const productIds = this.cart.items.map(cp => {
+        return cp.productId;
+    });
+    return db.collection('products')
+    /* Find products in the cart! */
+        .find({_id: {$in: productIds} })
+        .toArray() /* mongodb command, cursor to array
+            https://docs.mongodb.com/manual/reference/method/cursor.toArray/ */
+        .then(products => {
+            return products.map(p => { // iterate through array
+                return {
+                    ...p, // product data
+                    quantity: this.cart.items.find(item => { // Array method
+                        return item.productId.toString() === p._id.toString();
+                    }).quantity
+                }
+            });
+        })
+  }
+
+  // By user, not static.
   addToCart(product) {
 
     // Array method, iterate through array, return index of found item.

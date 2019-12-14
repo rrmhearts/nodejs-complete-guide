@@ -56,18 +56,13 @@ exports.getIndex = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   req.user
-    .getCart() // magic method sequelize
-    .then(cart => {
-      return cart
-        .getProducts() // magic method sequelize
-        .then(products => {
-          res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
-        })
-        .catch(err => console.log(err));
+    .getCart() // will reimplement in our user.
+    .then(products => {
+        res.render('shop/cart', {
+        path: '/cart',
+        pageTitle: 'Your Cart',
+        products: products
+        });
     })
     .catch(err => console.log(err));
 };
