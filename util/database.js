@@ -6,7 +6,7 @@ let _db;
 const mongoConnect = callback => {
   MongoClient.connect(
     `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}`+
-        '/shop?retryWrites=true&w=majority'
+        '/shop?retryWrites=true&w=majority', {useNewUrlParser: true}
   )
     .then(client => {
       console.log('Connected!');

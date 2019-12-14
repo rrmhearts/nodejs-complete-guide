@@ -74,38 +74,45 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  let fetchedCart;
-  let newQuantity = 1;
-  req.user
-    .getCart() // magic method sequelize
-    .then(cart => {
-      fetchedCart = cart;
-      // This must be using "cart item to connect prodId with cart."
-      return cart.getProducts({ where: { id: prodId } }); // magic method sequelize
-    })
-    .then(products => {
-      let product;
-      if (products.length > 0) {
-        product = products[0];
-      }
-
-      if (product) { // product already in cart, increase quantity
-        const oldQuantity = product.cartItem.quantity;
-        newQuantity = oldQuantity + 1;
-        return product;
-      }
-      return Product.findByPk(prodId); // find product if not in cart.
-    })
+  Product.findById(prodId)
     .then(product => {
-        // Connect product to a cart by adding a line to cartItems.
-      return fetchedCart.addProduct(product, { // magic method sequelize
-        through: { quantity: newQuantity }
-      });
+        return req.user.addToCart(product)
     })
-    .then(() => {
-      res.redirect('/cart');
-    })
-    .catch(err => console.log(err));
+    .then(result => {
+        console.log(result);
+    });
+//   let fetchedCart;
+//   let newQuantity = 1;
+//   req.user
+//     .getCart() // magic method sequelize
+//     .then(cart => {
+//       fetchedCart = cart;
+//       // This must be using "cart item to connect prodId with cart."
+//       return cart.getProducts({ where: { id: prodId } }); // magic method sequelize
+//     })
+//     .then(products => {
+//       let product;
+//       if (products.length > 0) {
+//         product = products[0];
+//       }
+
+//       if (product) { // product already in cart, increase quantity
+//         const oldQuantity = product.cartItem.quantity;
+//         newQuantity = oldQuantity + 1;
+//         return product;
+//       }
+//       return Product.findByPk(prodId); // find product if not in cart.
+//     })
+//     .then(product => {
+//         // Connect product to a cart by adding a line to cartItems.
+//       return fetchedCart.addProduct(product, { // magic method sequelize
+//         through: { quantity: newQuantity }
+//       });
+//     })
+//     .then(() => {
+//       res.redirect('/cart');
+//     })
+//     .catch(err => console.log(err));
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
