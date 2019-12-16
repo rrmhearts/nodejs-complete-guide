@@ -91,6 +91,60 @@ class User {
         );
   }
 
+  deleteItemFromCart(productId) {
+    const updatedCartItems = this.cart.items.filter(item => {
+      return item.productId.toString() !== productId.toString();
+    });
+
+    const db = getDb();
+    return db
+      .collection('users')
+      .updateOne(/* Search for    */
+        {_id: this._id}, 
+                 /* How to Update */
+        {$set: {cart: {items: updatedCartItems}}}
+      );
+  }
+
+  addOrder() {
+    // Orders gets longer than a cart. Start new table.
+    const db = getDb();
+
+    // Will get product information too!
+    return this.getCart().then(products => {
+      const order = {
+        items: products,
+        user: {
+          _id: new mongodb.ObjectId(this._id),
+          name: this.name,
+          email: this.email
+        }
+      };
+      return db.collection('orders').insertOne(order)
+    })
+    .then(() => { // then clear cart.
+      this.cart = {items: []};
+      return db
+        .collection('users')
+        .updateOne( /*clear cart*/
+          {_id: new mongodb.ObjectId(this._id)}, 
+          {$set: {cart: this.cart}}
+         );
+    });
+  }
+
+  getOrders() {
+    const db = getDb();
+    return db.collection('orders')
+      .find({ // user is an object in an order.
+        'user._id': new mongodb.ObjectId(this._id /*user*/ )
+      })
+      .toArray()
+      .then(products => {
+        return products;
+      });
+  }
+
   static findById(userId) {
     const db = getDb();
     return db.collection('users')
