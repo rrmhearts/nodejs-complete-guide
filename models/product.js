@@ -28,17 +28,3 @@ const productSchema = new Schema({
 
 // create "products" collection
 module.exports = mongoose.model('Product', productSchema);
-
-//   static deleteById(prodId) {
-//     const db = getDb();
-//     return db.collection('products')
-//     .deleteOne({_id: new mongodb.ObjectId(prodId)})
-//     .then(() => {
-//       console.log('Deleted: ' + prodId);
-//     })
-//     .catch(() => {
-//       console.log(err);
-//     })
-//   }
-// }
-// module.exports = Product;

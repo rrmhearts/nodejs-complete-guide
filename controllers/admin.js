@@ -93,11 +93,12 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndRemove(prodId)
+  Product.findByIdAndRemove(prodId) // mongoose method
     .then(() => {
       // Remove from user cart!
-      User.findById('5df9303a0bed90442e55d5cd').then(user => user.removeFromCart(prodId));
-      
+      //User.findById('5df9303a0bed90442e55d5cd').then(user => user.removeFromCart(prodId));
+      User.findById(req.user._id).then(user => user.removeFromCart(prodId));
+
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');
     })
