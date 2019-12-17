@@ -1,4 +1,5 @@
 const Product = require('../models/product');
+const User = require('../models/user');
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
@@ -13,13 +14,16 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(
-    title, price, description, 
-    imageUrl, null, req.user._id
-  );
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imageUrl,
+    userId: req.user // store user, mongoose will only store _id
+  });
   product
-    .save()
-    .then(result => {
+    .save() // defined by mongoose!!
+    .then(result => { // not a promise, but provided by mongoose!
       // console.log(result);
       console.log('Created Product');
       res.redirect('/admin/products');
@@ -56,15 +60,14 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
-  const product = new Product(
-    updatedTitle,
-    updatedPrice,
-    updatedDesc,
-    updatedImageUrl,
-    prodId,
-    req.user._id
-  );
-  product.save()
+  Product.findById(prodId).then(product => {
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.imageUrl = updatedImageUrl;
+    product.description = updatedDesc;
+
+    return product.save()
+  })
   .then(result => {
     console.log('UPDATED PRODUCT!');
     res.redirect('/admin/products');
@@ -73,7 +76,11 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
+    /*
+    .select('title price -_id') // choose fields to populate!
+    .populate('userId', 'name') // will populate user into response! 2nd arg choose fields!
+    */
     .then(products => {
       res.render('admin/products', {
         prods: products,
@@ -86,8 +93,11 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.deleteById(prodId)
+  Product.findByIdAndRemove(prodId)
     .then(() => {
+      // Remove from user cart!
+      User.findById('5df9303a0bed90442e55d5cd').then(user => user.removeFromCart(prodId));
+      
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');
     })

@@ -4,9 +4,9 @@ const path = require('path');
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const errorController = require('./controllers/error');
-const mongoConnect = require('./util/database').mongoConnect;
 const User = require('./models/user');
 
 const app = express();
@@ -23,10 +23,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /* Middle ware to login a user */
 app.use((req, res, next) => {
-  User.findById('5df403201c9d4400007bbb22')
+  User.findById('5df9303a0bed90442e55d5cd')
     .then(user => {
         // Create model in order to use methods.
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user;
       next();
     })
     .catch(err => console.log(err));
@@ -37,10 +37,23 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}`+
+'/shop?retryWrites=true&w=majority')
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: 'Ryan',
+          email: 'ryan@test.com',
+          cart: {
+            items: []
+          }
+        }).save();
+      }
+    })
 
-  /* Does not return
-     Will keep the db context by closure
-  */
-  app.listen(3000);
-});
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
