@@ -39,21 +39,35 @@ class User {
     const productIds = this.cart.items.map(cp => {
         return cp.productId;
     });
+
     return db.collection('products')
     /* Find products in the cart! */
         .find({_id: {$in: productIds} })
         .toArray() /* mongodb command, cursor to array
             https://docs.mongodb.com/manual/reference/method/cursor.toArray/ */
         .then(products => {
-            return products.map(p => { // iterate through array
-                return {
-                    ...p, // product data
-                    quantity: this.cart.items.find(item => { // Array method
-                        return item.productId.toString() === p._id.toString();
-                    }).quantity
-                }
-            });
-        })
+
+          // Clean Up cart if item was deleted!
+          if (productIds.length !== products.length)
+          {
+            const cleanUp = productIds.filter(id => 
+              !products.map(p => {
+                return p._id.toString()
+              })
+              .includes(id.toString()) // must be toString.
+            );
+            cleanUp.forEach(id => this.deleteItemFromCart(new mongodb.ObjectId(id)) );
+          }
+
+          return products.map(p => { // iterate through array
+              return {
+                  ...p, // product data
+                  quantity: this.cart.items.find(item => { // Array method
+                      return item.productId.toString() === p._id.toString();
+                  }).quantity
+              }
+          });
+        });
   }
 
   // By user, not static.
