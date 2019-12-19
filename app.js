@@ -17,6 +17,7 @@ app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -27,6 +28,8 @@ app.use((req, res, next) => {
     .then(user => {
         // Create model in order to use methods.
       req.user = user;
+
+      // Go to next route!
       next();
     })
     .catch(err => console.log(err));
@@ -35,6 +38,10 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
+// Only if route is not in shopRoutes
+app.use(authRoutes);
+
+// If request does not have a route above!
 app.use(errorController.get404);
 
 mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}`+
