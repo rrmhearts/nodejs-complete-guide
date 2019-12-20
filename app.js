@@ -5,6 +5,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -21,6 +22,10 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: 'secret string', resave: false/*only if something changes*/,
+  saveUninitialized: false, /*cookie: {maxAge:... expires...}*/
+}));
 
 /* Middle ware to login a user */
 app.use((req, res, next) => {
