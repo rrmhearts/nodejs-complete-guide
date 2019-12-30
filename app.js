@@ -37,6 +37,22 @@ app.use(session({
   cookie: { /* can add cookie related info here */ }
 }));
 
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  // Use session to remake model.
+  User.findById(req.session.user._id)
+    .then(user => {
+      // only stores data. MongoDBStore does not know about Mongoose models!
+                      // This doesn't store/fetch Mongoose methods!
+      // Use session to feed this request.. as Mongoose Model.
+      req.user = user // mongoose model user!
+      next();
+    })
+    .catch(err => console.log(err));
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
