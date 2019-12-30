@@ -15,7 +15,11 @@ exports.postLogin = (req, res, next) => {
       req.session.user = user; // only stores data. MongoDBStore does not know about Mongoose models!
                       // This doesn't store/fetch Mongoose methods!
                       console.log(user);
-      res.redirect('/');
+      // Sets session to mongodb, takes time. Redirect fired independently.
+      req.session.save((err) => {
+          console.log(err);
+          res.redirect('/'); // redirect after session saved.
+      }); // ensure session created before redirect.
     })
     .catch(err => console.log(err));
 };
