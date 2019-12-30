@@ -36,6 +36,22 @@ app.use(session({
   store: store, /* store session data in mongodb! (FOR PRODUCTION ~~ more secure, will not overload memory)*/
 }));
 
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  // Use session to remake model.
+  User.findById(req.session.user._id)
+    .then(user => {
+      // only stores data. MongoDBStore does not know about Mongoose models!
+                      // This doesn't store/fetch Mongoose methods!
+      // Use session to feed this request.. as Mongoose Model.
+      req.user = user // mongoose model user!
+      next();
+    })
+    .catch(err => console.log(err));
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
