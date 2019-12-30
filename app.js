@@ -33,21 +33,9 @@ app.use(session({
   secret: 'secret string', /*signing hash for id in cookie*/
   resave: false, /*only if something changes*/
   saveUninitialized: false, /*cookie: {maxAge:... expires...}*/
-  store: store, /* store session data in mongodb! (FOR PRODUCTION ~~ more secure, will not overload memory)*/
+  store: store, /* store session data in mongodb! (FOR PRODUCTION ~~ more secure, will not overload memory)*/ 
+  cookie: { /* can add cookie related info here */ }
 }));
-
-/* Middle ware to login a user */
-app.use((req, res, next) => {
-  User.findById('5df9303a0bed90442e55d5cd')
-    .then(user => {
-        // Create model in order to use methods.
-      req.user = user;
-
-      // Go to next route!
-      next();
-    })
-    .catch(err => console.log(err));
-});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);

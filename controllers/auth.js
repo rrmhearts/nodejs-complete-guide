@@ -1,11 +1,16 @@
+const User = require('../models/user');
+
 exports.getLogin = (req, res, next) => {
+/*
+Assignment 5
+    Ensure on login, fetch user data, not in middleware.
+    Store user in session! After login!
+*/
 
     // Use cookie-parser
     // Sensitive data should never be stored client side!
     // Cookies can be sent to multiple pages
-    //const cookie = req.get('Cookie');
-    //const isLoggedIn = cookie ? cookie.split('=')[1] === 'true' /* text always true*/ : false;
-    console.log(req.session.isLoggedIn);
+    
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
@@ -16,13 +21,22 @@ exports.getLogin = (req, res, next) => {
 
 exports.postLogin = (req, res, next) => {
     /*
-        Redirect to here creates a brand new requst.
-        Requests are independent of each other!
-      */
-    req.session.isLoggedIn = true; // Solutions? 1) Global variable? NO, all users would get it.
-                           //            2) Save cookie is users browser. Send with requests.
-    //res.setHeader('Set-Cookie', 'loggedIn=true'); //Max-Age=10 //Secure' /*only https*/
-    //HttpOnly for httponly traffic
+    Assignment 5
+       Fetch user and store user in session 
+       Adjust code to use session data.
+    */
+    User.findById('5df9303a0bed90442e55d5cd')
+    .then(user => {
+        // Create model in order to use methods.
+        req.session.isLoggedIn = true;
+        req.session.user = user;
+        console.log(req.session.user);
+    })
+   .catch(err => {
+       req.session.user = "FAILED";
+       req.session.isLoggedIn = false;
+       console.log(err);
+    });
 
     /* Express Session will set cookie to identify you to server, but encrypted. */
 

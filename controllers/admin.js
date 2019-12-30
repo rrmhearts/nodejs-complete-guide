@@ -6,7 +6,7 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
-    isAuthenticated: req.isLoggedIn
+    isAuthenticated: req.session.isLoggedIn
   });
 };
 
@@ -20,7 +20,7 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageUrl: imageUrl,
-    userId: req.user // store user, mongoose will only store _id
+    userId: req.session.user // store user, mongoose will only store _id
   });
   product
     .save() // defined by mongoose!!
@@ -50,7 +50,7 @@ exports.getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editing: editMode,
         product: product,
-        isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => console.log(err));
@@ -88,7 +88,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: 'Admin Products',
         path: '/admin/products',
-        isAuthenticated: req.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => console.log(err));
@@ -100,7 +100,7 @@ exports.postDeleteProduct = (req, res, next) => {
     .then(() => {
       // Remove from user cart!
       //User.findById('5df9303a0bed90442e55d5cd').then(user => user.removeFromCart(prodId));
-      User.findById(req.user._id).then(user => user.removeFromCart(prodId));
+      User.findById(req.session.user._id).then(user => user.removeFromCart(prodId));
 
       console.log('DESTROYED PRODUCT');
       res.redirect('/admin/products');
