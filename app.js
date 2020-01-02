@@ -61,6 +61,16 @@ app.use((req, res, next) => {
     .catch(err => console.log(err));
 });
 
+/* Crucial feature! Must add to every project that uses POST. */
+app.use((req, res, next) => {
+  // local variable for a single view.
+  // These vars will be available in each response page.
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  // each respose will have a unique token set.
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
