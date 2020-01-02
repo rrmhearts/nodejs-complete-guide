@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const flash = require('connect-flash');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -44,6 +45,7 @@ app.use(session({
   store: store, /* store session data in mongodb! (FOR PRODUCTION ~~ more secure, will not overload memory)*/
 }));
 app.use(csrfProtection); // requires session
+app.use(flash()); // requires session
 
 app.use((req, res, next) => {
   if (!req.session.user) {

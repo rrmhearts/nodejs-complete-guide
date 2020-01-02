@@ -5,7 +5,7 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        isAuthenticated: false
+        errorMessage: req.flash('error') // information is removed from session!
     });
 };
 
@@ -13,7 +13,6 @@ exports.getSignup = (req, res, next) => {
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
-        isAuthenticated: false
     });
 };
 
@@ -23,8 +22,10 @@ exports.postLogin = (req, res, next) => {
     User.findOne({email: email})
         .then(user => {
             if (!user) {
-                // failed to login
+                // failed to login, add error message to session for 1 request, then disappear.
+                req.flash('error', 'Invalid email or password.');
                 return res.redirect('/login');
+                // How do we pass data into a view by a redirect?? (use a session w/ connect-flash)
             }
             // check password to login
             bcrypt.compare(password, user.password)
@@ -41,6 +42,7 @@ exports.postLogin = (req, res, next) => {
                         }); // ensure session created before redirect.
                         // ^^ return to prevent execution of below redirect to /login
                     }
+                    req.session.isLoggedIn = false;
                     res.redirect('/login');
                 })
                 .catch(err => {
@@ -92,6 +94,7 @@ exports.postSignup = (req, res, next) => {
 exports.postLogout = (req, res, next) => {
     // method provided by package
     req.session.destroy(err => {
+        /* will remove session.isLoggedIn */
         console.log(err);
         res.redirect('/');
     });
