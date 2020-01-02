@@ -63,6 +63,7 @@ app.use(errorController.get404);
 
 mongoose.connect(MONGODB_URI+'?retryWrites=true&w=majority')
   .then(result => {
+    /*** Now we have creat user flow
     User.findOne().then(user => {
       if (!user) {
         const user = new User({
@@ -74,7 +75,7 @@ mongoose.connect(MONGODB_URI+'?retryWrites=true&w=majority')
         }).save();
       }
     })
-
+*/
     app.listen(3000);
   })
   .catch(err => {
