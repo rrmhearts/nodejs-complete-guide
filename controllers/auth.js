@@ -1,5 +1,17 @@
+require('dotenv').config();
+
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+// nodemailer-sendgrid-transport has 3 vulnerabilities!
+
 const User = require('../models/user');
+
+const transporter = nodemailer.createTransport(sendgridTransport({
+    auth: {
+        api_key: process.env.EMAIL_API,
+    }
+})/*config returned*/);
 
 exports.getLogin = (req, res, next) => {
     let message = req.flash('error');
@@ -100,6 +112,15 @@ exports.postSignup = (req, res, next) => {
                 .then(result => {
                     req.flash('success', 'Signup Success.');
                     res.redirect('/login');
+                    return transporter.sendMail({
+                        to: email,
+                        from: 'shop@node-complete.com',
+                        subject: 'Signup Succeeded',
+                        html: '<h1>You successfully signed up!'
+                    });
+                })
+                .catch(emailErr => {
+                    console.log(emailErr);
                 }); // returns promise
         })
         // removed then blocks
