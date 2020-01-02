@@ -1,10 +1,6 @@
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
-  // If not logged in, don't allow page load. Lock down route.
-  if (!req.session.isLoggedIn) {
-    return res.redirect('/login');
-  }
 
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
