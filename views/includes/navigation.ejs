@@ -40,6 +40,11 @@
             <% } else { %>
             <li class="main-header__item">
                 <form action="/logout" method="POST">
+                    <!-- This input passes the CSRF Token along with post request. 
+                         Only YOUR pages can post to YOUR server.
+                         Name is required to be _csrf for package to see input value
+                    -->
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                     <button type="submit">Logout</button>
                 </form>
             </li>
@@ -82,6 +87,7 @@
         <% } else { %>
             <li class="mobile-nav__item">
                 <form action="/logout" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                     <button type="submit">Logout</button>
                 </form>
             </li>

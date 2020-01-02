@@ -5,7 +5,8 @@ exports.getLogin = (req, res, next) => {
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        isAuthenticated: false
+        isAuthenticated: false,
+        csrfToken: req.csrfToken()
     });
 };
 
@@ -87,6 +88,7 @@ exports.postSignup = (req, res, next) => {
 
 /*
     Post Logout clears session.
+    All post request require CSRF Token in request body.
 */
 exports.postLogout = (req, res, next) => {
     // method provided by package

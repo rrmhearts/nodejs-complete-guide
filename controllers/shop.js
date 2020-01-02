@@ -31,6 +31,7 @@ exports.getProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 
+// Views need CSRF token in order for posts to access server.
 exports.getIndex = (req, res, next) => {
   Product.find()
     .then(products => {
@@ -38,7 +39,8 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: 'Shop',
         path: '/',
-        isAuthenticated: req.session.isLoggedIn
+        isAuthenticated: req.session.isLoggedIn,
+        csrfToken: req.csrfToken()
       });
     })
     .catch(err => {

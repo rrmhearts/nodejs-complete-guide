@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const csrf = require('csurf');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -19,6 +20,13 @@ const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: 'sessions'
 }); // constructor
+
+/***
+ * Using CSRF Token to prevent Cross Site Request Forgery.
+ *   Attacker links a fake view that uses your backend.
+ *   Fake View sends link/post request to your own page/server.
+ */
+const csrfProtection = csrf(); // middleware
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -35,6 +43,7 @@ app.use(session({
   saveUninitialized: false, /*cookie: {maxAge:... expires...}*/
   store: store, /* store session data in mongodb! (FOR PRODUCTION ~~ more secure, will not overload memory)*/
 }));
+app.use(csrfProtection); // requires session
 
 app.use((req, res, next) => {
   if (!req.session.user) {
