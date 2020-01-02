@@ -5,8 +5,11 @@
 
     <%- include('../includes/navigation.ejs') %>
     <main>
-        <% if (errorMessage && errorMessage != "") {%>
+        <% if (errorMessage) {%>
             <div class="user-message user-message--error"><%= errorMessage %></div>
+        <% } %>
+        <% if (successMessage) {%>
+            <div class="user-message"><%= successMessage %></div>
         <% } %>
         <!-- Form submits a POST request to /login, will be handled! -->
         <form class="login-form" action="/login" method="POST">

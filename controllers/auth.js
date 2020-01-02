@@ -2,17 +2,31 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
+    let message = req.flash('error');
+    if (message.length > 0 ) {
+        message = message[0];
+    } else {
+        message = null
+    }
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
-        errorMessage: req.flash('error') // information is removed from session!
+        errorMessage: message, // information is removed from session!
+        successMessage: req.flash('success')[0] // defined as either undefined (false) or string (true)
     });
 };
 
 exports.getSignup = (req, res, next) => {
+    let message = req.flash('error');
+    if (message.length > 0 ) {
+        message = message[0];
+    } else {
+        message = null
+    }
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'Signup',
+        errorMessage: message // information is removed from session!
     });
 };
 
@@ -43,9 +57,11 @@ exports.postLogin = (req, res, next) => {
                         // ^^ return to prevent execution of below redirect to /login
                     }
                     req.session.isLoggedIn = false;
+                    req.flash('error', 'Invalid email or password.');
                     res.redirect('/login');
                 })
                 .catch(err => {
+                    req.flash('error', 'Login issue.');
                     console.log(err);
                     res.redirect('/login');
                 })
@@ -59,15 +75,21 @@ exports.postSignup = (req, res, next) => {
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
 
+    if (!email || !password) {
+        req.flash('error', 'Email and Password are required.');
+        return res.redirect('/signup'); // should not go to next then block!!!
+    }
     // no duplicate emails, passwords match
     User.findOne({email: email})
         .then(userDoc => {
             if (userDoc) {
                 // Don't recreate.. send error message eventually.
+                req.flash('error', 'User already exists.');
                 return res.redirect('/signup'); // should not go to next then block!!!
             }
             return bcrypt.hash(password, 12)
                 .then(hashedPassword => { // embed then blocks to prevent being called by redirect above ^^
+                    // Create a new user!
                     const user = new User({
                         email: email,
                         password: hashedPassword, // cannot store in plain text!! Using bcrypt!
@@ -76,15 +98,16 @@ exports.postSignup = (req, res, next) => {
                     return user.save(); // return a promise for below
                 })
                 .then(result => {
+                    req.flash('success', 'Signup Success.');
                     res.redirect('/login');
                 }); // returns promise
         })
         // removed then blocks
         .catch(err => {
+            req.flash('error', 'Signup error.');
             console.log(err);
         });
 
-    // Create a new user!
 };
 
 /*
