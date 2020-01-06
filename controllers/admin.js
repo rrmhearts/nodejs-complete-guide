@@ -77,9 +77,8 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
-    // .select('title price -_id')
-    // .populate('userId', 'name')
+  Product.find({userId: req.user._id})
+    // Only show products created by logged in user!
     .then(products => {
       console.log(products);
       res.render('admin/products', {
