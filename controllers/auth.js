@@ -4,8 +4,10 @@ const crypto = require('crypto');
 
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
 // nodemailer-sendgrid-transport has 3 vulnerabilities!
+
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 
@@ -87,50 +89,49 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
+    //const confirmPassword = req.body.confirmPassword; checked in validator in routes
+    const errors = validationResult(req); // errors from express-validator
+
+    if (!errors.isEmpty()) {
+        console.log(errors.array())
+        return res.status(422).render('auth/signup', {
+            path: '/signup',
+            pageTitle: 'Signup',
+            errorMessage: errors.array()[0].msg // information is removed from session!
+        });
+    }
 
     if (!email || !password) {
         req.flash('error', 'Email and Password are required.');
         return res.redirect('/signup'); // should not go to next then block!!!
     }
-    // no duplicate emails, passwords match
-    User.findOne({email: email})
-        .then(userDoc => {
-            if (userDoc) {
-                // Don't recreate.. send error message eventually.
-                req.flash('error', 'User already exists.');
-                return res.redirect('/signup'); // should not go to next then block!!!
-            }
-            return bcrypt.hash(password, 12)
-                .then(hashedPassword => { // embed then blocks to prevent being called by redirect above ^^
-                    // Create a new user!
-                    const user = new User({
-                        email: email,
-                        password: hashedPassword, // cannot store in plain text!! Using bcrypt!
-                        cart: { items: [] }
-                    });
-                    return user.save(); // return a promise for below
-                })
-                .then(result => {
-                    req.flash('success', 'Signup Success.');
-                    res.redirect('/login');
-                    return transporter.sendMail({
-                        to: email,
-                        from: 'shop@node-complete.com',
-                        subject: 'Signup Succeeded',
-                        html: '<h1>You successfully signed up!'
-                    });
-                })
-                .catch(emailErr => {
-                    console.log(emailErr);
-                }); // returns promise
+    /* 
+        Find email message now done in routes/auth.js. User does not exist because checking for existence
+         in routes/auth.js
+    */
+    bcrypt.hash(password, 12)
+        .then(hashedPassword => { // embed then blocks to prevent being called by redirect above ^^
+            // Create a new user!
+            const user = new User({
+                email: email,
+                password: hashedPassword, // cannot store in plain text!! Using bcrypt!
+                cart: { items: [] }
+            });
+            return user.save(); // return a promise for below
         })
-        // removed then blocks
-        .catch(err => {
-            req.flash('error', 'Signup error.');
-            console.log(err);
-        });
-
+        .then(result => {
+            req.flash('success', 'Signup Success.');
+            res.redirect('/login');
+            return transporter.sendMail({
+                to: email,
+                from: 'shop@node-complete.com',
+                subject: 'Signup Succeeded',
+                html: '<h1>You successfully signed up!'
+            });
+        })
+        .catch(emailErr => {
+            console.log(emailErr);
+        }); // returns promise
 };
 
 /*
