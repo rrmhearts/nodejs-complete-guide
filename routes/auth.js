@@ -6,29 +6,38 @@ const authController = require('../controllers/auth');
 const User = require('../models/user');
 
 router.get('/login', authController.getLogin);
-router.post('/login', authController.postLogin);
-
 router.get('/signup', authController.getSignup);
+
+router.post('/login',
+    [
+        check('email').isEmail()
+            .withMessage('Please enter a valid email.')
+            /* You can write your own validators */
+            .custom(async (value) => {
+                const userDoc = await User.findOne({ email: value });
+                if (!userDoc) {
+                    return Promise.reject('Email does not exist in our records.');
+                }
+            }),
+        // check password in BODY of request, not headers.
+        body('password',
+            'Invalid email or password.') // default withMessage
+            .isLength({min: 5})
+            .isAlphanumeric()
+    ],
+    authController.postLogin
+);
+
 router.post('/signup',
     [
         check('email').isEmail()
             .withMessage('Please enter a valid email.')
             /* You can write your own validators */
-            .custom((value) => {
-                //if (value === 'test@test.com')
-                //    throw new Error('This email address is forbidden.');
-                //return true; // for success
-
-                /*
-                    custom returns true or a promise. Returns a rejection, stores message as an error.
-                    YYY Below replaces ^^^, Promise.reject... replaces throw new Error...
-                */
-                return User.findOne({email: value})
-                .then(userDoc => {
-                    if (userDoc) {
-                        return Promise.reject('E-mail exists already, please pick a different one.');
-                    }
-                });
+            .custom(async (value) => {
+                const userDoc = await User.findOne({ email: value });
+                if (userDoc) {
+                    return Promise.reject('E-mail exists already, please pick a different one.');
+                }
             }),
         // check password in BODY of request, not headers.
         body('password',
@@ -43,7 +52,8 @@ router.post('/signup',
             
         })
     ],
-    authController.postSignup);
+    authController.postSignup
+);
 router.post('/logout', authController.postLogout);
 
 router.get('/reset', authController.getReset);

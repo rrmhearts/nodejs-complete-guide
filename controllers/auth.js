@@ -51,6 +51,13 @@ exports.postLogin = (req, res, next) => {
     const password = req.body.password;
     User.findOne({email: email})
         .then(user => {
+            const errors = validationResult(req); // errors from express-validator
+
+            if (!errors.isEmpty())
+            {
+                req.flash('error', errors.array()[0].msg);
+                return res.redirect('/login');
+            }
             if (!user) {
                 // failed to login, add error message to session for 1 request, then disappear.
                 req.flash('error', 'Invalid email or password.');
