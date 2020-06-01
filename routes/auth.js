@@ -1,59 +1,69 @@
 const express = require('express');
-const { check, body } = require('express-validator');
-const router = express.Router();
+const { check, body } = require('express-validator/check');
 
 const authController = require('../controllers/auth');
 const User = require('../models/user');
 
+const router = express.Router();
+
 router.get('/login', authController.getLogin);
+
 router.get('/signup', authController.getSignup);
 
-router.post('/login',
+router.post(
+  '/login',
     [
-        check('email').isEmail()
-            .withMessage('Please enter a valid email.')
-            /* You can write your own validators */
-            .custom(async (value) => {
-                const userDoc = await User.findOne({ email: value });
-                if (!userDoc) {
-                    return Promise.reject('Email does not exist in our records.');
-                }
-            }),
-        // check password in BODY of request, not headers.
-        body('password',
-            'Invalid email or password.') // default withMessage
-            .isLength({min: 5})
+    body('email')
+      .isEmail()
+      .withMessage('Please enter a valid email address.')
+      .normalizeEmail(),
+    body('password', 'Password has to be valid.')
+      .isLength({ min: 5 })
             .isAlphanumeric()
+      .trim()
     ],
     authController.postLogin
 );
 
-router.post('/signup',
+router.post(
+  '/signup',
     [
-        check('email').isEmail()
+    check('email')
+      .isEmail()
             .withMessage('Please enter a valid email.')
-            /* You can write your own validators */
-            .custom(async (value) => {
-                const userDoc = await User.findOne({ email: value });
+      .custom((value, { req }) => {
+        // if (value === 'test@test.com') {
+        //   throw new Error('This email address if forbidden.');
+        // }
+        // return true;
+        return User.findOne({ email: value }).then(userDoc => {
                 if (userDoc) {
-                    return Promise.reject('E-mail exists already, please pick a different one.');
+            return Promise.reject(
+              'E-Mail exists already, please pick a different one.'
+            );
                 }
-            }),
-        // check password in BODY of request, not headers.
-        body('password',
-             'Please enter a password with only numbers and text, at least 5 characters') // default withMessage
-            .isLength({min: 5})
-            .isAlphanumeric(),
-        body('confirmPassword').custom((value, { req } ) => {
+        });
+      })
+      .normalizeEmail(),
+    body(
+      'password',
+      'Please enter a password with only numbers and text and at least 5 characters.'
+    )
+      .isLength({ min: 5 })
+      .isAlphanumeric()
+      .trim(),
+    body('confirmPassword')
+      .trim()
+      .custom((value, { req }) => {
             if (value !== req.body.password) { 
                 throw new Error('Passwords have to match!');
             }
-            return true; // first password checked for length
-            
+        return true;
         })
     ],
     authController.postSignup
 );
+
 router.post('/logout', authController.postLogout);
 
 router.get('/reset', authController.getReset);

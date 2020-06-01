@@ -5,17 +5,16 @@
 
     <%- include('../includes/navigation.ejs') %>
     <main>
-        <% if (errorMessage) {%>
+        <% if (errorMessage) { %>
             <div class="user-message user-message--error"><%= errorMessage %></div>
         <% } %>
-        <!-- Form submits a POST request to /login, will be handled! -->
         <form class="login-form" action="/reset" method="POST">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-control">
                 <label for="email">E-Mail</label>
                 <input type="email" name="email" id="email">
             </div>
-            <button class="btn" type="submit">Reset password</button>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="btn" type="submit">Reset Password</button>
         </form>
     </main>
 <%- include('../includes/end.ejs') %>

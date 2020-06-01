@@ -235,16 +235,17 @@ form {
 .user-message {
   margin: auto;
   width: 90%;
-  border: 1px solid rgb(61, 61, 136);
-  padding: 1rem;
+  border: 1px solid #4771fa;
+  padding: 0.5rem;
   border-radius: 3px;
-  background: #8ea8fd;
+  background: #b9c9ff;
   text-align: center;
 }
 
 .user-message--error {
-  border: 1px solid red;
-  background: #db9191;
+  border-color: red;
+  background: rgb(255, 176, 176);
+  color: red;
 }
 
 @media (min-width: 768px) {
